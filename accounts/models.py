@@ -1,12 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
+
 class CustomUserManager(BaseUserManager):
+    """
+    Custom manager for User model using email as the unique identifier.
+    """
     def create_user(self, email, password=None, **extra_fields):
         if not email:
-            raise ValueError('The Email field must be set')
+            raise ValueError("The Email field must be set")
         email = self.normalize_email(email)
-        extra_fields.setdefault('is_active', True)     
+        extra_fields.setdefault('is_active', True)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -18,42 +22,39 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_active', True)
 
         if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
+            raise ValueError("Superuser must have is_staff=True.")
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
+            raise ValueError("Superuser must have is_superuser=True.")
 
         return self.create_user(email, password, **extra_fields)
 
+
 class User(AbstractUser):
-    # Replace username with email
+    """
+    Custom User model with email login.
+    Default role is Patron (general user).
+    """
     username = None
     email = models.EmailField(unique=True)
 
-    # Role field (basic RBAC)
     ROLE_CHOICES = (
         ('admin', 'Admin'),
-        ('volunteer', 'Volunteer'),
-        ('community', 'Community Member'),
+        ('patron', 'Patron'),
     )
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='community')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='patron')
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []  # Removes username requirement
+    REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
 
     def __str__(self):
         return f"{self.email} ({self.get_role_display()})"
-    
+
     @property
     def is_admin(self):
         return self.role == 'admin'
 
     @property
-    def is_volunteer(self):
-        return self.role == 'volunteer'
-
-    @property
     def is_patron(self):
         return self.role == 'patron'
-# Create your models here.
