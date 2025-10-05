@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Community Outreach Programs</h2>
+
+    {% for program in programs %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h4>{{ program.title }}</h4>
+                <p>{{ program.description|truncatewords:25 }}</p>
+                <a href="{% url 'programs:program_detail' program.pk %}" class="btn btn-primary btn-sm">View Details</a>
+            </div>
+        </div>
+    {% empty %}
+        <p>No programs available at the moment.</p>
+    {% endfor %}
+</div>
+{% endblock %}

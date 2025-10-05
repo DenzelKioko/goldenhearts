@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg rounded-3">
+                <div class="card-body p-4 p-md-5">
+
+                    <h1 class="card-title h3 fw-bold text-dark mb-4 border-bottom pb-3">Edit Your Profile</h1>
+
+                    {% comment %} Handle success messages if any {% endcomment %}
+                    {% for message in messages %}
+                    <div class="alert alert-success" role="alert">{{ message }}</div>
+                    {% endfor %}
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Profile Picture Display and Field -->
+                        <div class="mb-4 text-center">
+                            {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}"
+                                class="rounded-circle mb-3 border border-3 border-warning" alt="Current Profile Picture"
+                                style="width: 180px; height: 180px; object-fit: cover;">
+                            {% else %}
+                            <!-- Default large icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" fill="currentColor"
+                                class="bi bi-person-circle text-muted mb-3" viewBox="0 0 16 16">
+                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                                <path fill-rule="evenodd"
+                                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+                            </svg>
+                            {% endif %}
+                            <label for="{{ form.profile_picture.id_for_label }}"
+                                class="form-label d-block text-secondary">
+                                Change Profile Picture:
+                            </label>
+                            {{ form.profile_picture }}
+                            {% if form.profile_picture.errors %}
+                            <div class="text-danger small mt-1">{{ form.profile_picture.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Regular Fields -->
+                        <div class="mb-3">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
+                            {{ form.first_name }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                            {{ form.last_name }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning btn-lg fw-bold shadow-sm">Save Changes</button>
+                            <a href="{% url 'profile' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

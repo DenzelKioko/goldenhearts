@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ program.title }}</h2>
+    <p>{{ program.description }}</p>
+    <hr>
+    <p><strong>Start Date:</strong> {{ program.start_date }}</p>
+    <p><strong>End Date:</strong> {{ program.end_date }}</p>
+    <p><strong>Location:</strong> {{ program.location }}</p>
+
+    <a href="{% url 'programs:program_list' %}" class="btn btn-secondary mt-3">← Back to all programs</a>
+</div>
+{% endblock %}

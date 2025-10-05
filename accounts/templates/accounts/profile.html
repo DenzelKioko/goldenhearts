@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}User Profile - {{ user.get_full_name|default:user.email }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg rounded-3">
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- Profile Header -->
+                    <div class="mb-4 border-bottom pb-3">
+                        <h1 class="card-title h3 fw-bold text-dark">
+                            Hello, {{ user.first_name|default:'Patron' }}
+                        </h1>
+                        <p class="text-secondary mt-1">
+                            Your current membership role: 
+                            <span class="fw-bold 
+                                {% if user.is_admin %}text-danger{% elif user.is_patron %}text-success{% else %}text-secondary{% endif %}">
+                                {{ user.get_role_display }}
+                            </span>
+                        </p>
+                    </div>
+
+                    <!-- Profile Details List -->
+                    <dl class="row mb-5">
+                        <!-- Email -->
+                        <dt class="col-sm-4 text-muted">Email Address</dt>
+                        <dd class="col-sm-8 fw-semibold">{{ user.email }}</dd>
+
+                        <!-- First Name -->
+                        <dt class="col-sm-4 text-muted">First Name</dt>
+                        <dd class="col-sm-8 fw-semibold">
+                            {{ user.first_name|default:'(Not provided)' }}
+                        </dd>
+
+                        <!-- Last Name -->
+                        <dt class="col-sm-4 text-muted">Last Name</dt>
+                        <dd class="col-sm-8 fw-semibold">
+                            {{ user.last_name|default:'(Not provided)' }}
+                        </dd>
+
+                        <!-- Date Joined -->
+                        <dt class="col-sm-4 text-muted">Member Since</dt>
+                        <dd class="col-sm-8 fw-semibold">
+                            {{ user.date_joined|date:"F j, Y" }}
+                        </dd>
+                    </dl>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between pt-3 border-top">
+                        
+                        <!-- Logout Button (Danger/Red Style) -->
+                        <a href="{% url 'logout' %}" 
+                           class="btn btn-danger w-45">
+                            <i class="fas fa-sign-out-alt"></i> Sign Out
+                        </a>
+
+                        <a href="{% url 'profile_edit' %}"
+                         class="btn btn-secondary w-45">Edit Profile Details
+                        </a>
+                        
+                        <!-- Admin Dashboard Link (Conditional - Secondary/Blue Style) -->
+                        {% if user.is_superuser or user.is_admin %}
+                        <a href="{% url 'admin:index' %}" 
+                           class="btn btn-secondary w-45">
+                            <i class="fas fa-tools"></i> Admin Dashboard
+                        </a>
+                        {% endif %}
+                    </div>
+                    
+                    <small class="d-block text-center text-muted mt-3">
+                        Need to update your profile? Contact an administrator.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

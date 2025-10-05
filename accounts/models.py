@@ -36,6 +36,13 @@ class User(AbstractUser):
     """
     username = None
     email = models.EmailField(unique=True)
+    # Images will be stored in media/profile_pics/
+    profile_picture = models.ImageField(
+        upload_to='profile_pics/', 
+        null=True, 
+        blank=True,
+        default='profile_pics/default.png' # Optional: Add a default placeholder image
+    )
 
     ROLE_CHOICES = (
         ('admin', 'Admin'),

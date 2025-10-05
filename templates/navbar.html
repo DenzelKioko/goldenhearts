@@ -1,0 +1,14 @@
+<nav>
+  <ul>
+    <li><a href="{% url 'home' %}">Home</a></li>
+    <li><a href="{% url 'programs:list' %}">Programs</a></li>
+    <li><a href="{% url 'events:list' %}">Events</a></li>
+    <li><a href="{% url 'donations:list' %}">Donations</a></li>
+    <li><a href="{% url 'feedback:create' %}">Feedback</a></li>
+    {% if user.is_authenticated %}
+      <li><a href="{% url 'logout' %}">Logout</a></li>
+    {% else %}
+      <li><a href="{% url 'login' %}">Login</a></li>
+    {% endif %}
+  </ul>
+</nav>
