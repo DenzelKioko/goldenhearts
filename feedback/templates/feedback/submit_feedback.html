@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Feedback{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="card shadow-lg border-0 rounded-3 p-4 p-md-5">
+            <h1 class="card-title text-center text-dark fw-bold mb-4">We Value Your Feedback</h1>
+            <p class="text-center text-muted mb-4">Help us improve by sharing your experience with our programs and services.</p>
+
+            <!-- Feedback Form Placeholder -->
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_subject" class="form-label">Subject</label>
+                    <input type="text" id="id_subject" name="subject" class="form-control" placeholder="e.g., Suggestion for Volunteer Program" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_feedback" class="form-label">Your Feedback</label>
+                    <textarea id="id_feedback" name="feedback" class="form-control" rows="6" placeholder="Tell us how we did..." required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="id_email" class="form-label">Your Email (Optional)</label>
+                    <input type="email" id="id_email" name="email" class="form-control" placeholder="user@example.com">
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-warning btn-lg fw-bold shadow-sm">Send Feedback</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

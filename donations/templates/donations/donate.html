@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Make a Donation{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0 rounded-3 p-4">
+            <h1 class="card-title text-center text-dark fw-bold mb-4">Support Golden Hearts</h1>
+            <p class="text-center text-muted mb-5">Every contribution helps us expand our outreach and support our community programs.</p>
+
+            <!-- Donation Form Placeholder -->
+            <form action="{% url 'donations:thank_you' %}" method="post">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label for="id_amount" class="form-label fw-bold">Donation Amount ($)</label>
+                    <input type="number" id="id_amount" name="amount" class="form-control form-control-lg" placeholder="e.g., 50.00" min="1" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="id_name" class="form-label fw-bold">Your Name (Optional)</label>
+                    <input type="text" id="id_name" name="name" class="form-control" placeholder="John Doe">
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label fw-bold">Payment Method Placeholder</label>
+                    <div class="border p-3 rounded bg-light text-center text-muted">
+                        [Integration area for Stripe, PayPal, or other payment gateways will go here.]
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-warning btn-lg fw-bold shadow-sm">
+                        Donate Now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

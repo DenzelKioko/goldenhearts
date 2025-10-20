@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Event Registrations - Golden Hearts{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">My Event Registrations</h1>
+            <p class="text-muted">Manage your event registrations and check your status</p>
+        </div>
+        <a href="{% url 'events:event_list' %}" class="btn btn-outline-primary">
+            <i class="fas fa-calendar-plus me-2"></i>Browse Events
+        </a>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Registrations -->
+    {% if registrations %}
+    <div class="row">
+        {% for reg in registrations %}
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title">{{ reg.event.title }}</h5>
+                        <div>
+                            {% if reg.approved %}
+                                <span class="badge bg-success">Approved</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% endif %}
+                            {% if reg.is_checked_in %}
+                                <span class="badge bg-info">Checked In</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="text-muted mb-3">
+                        <p class="mb-2">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            {{ reg.event.date }} at {{ reg.event.time }}
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            {{ reg.event.location }}
+                        </p>
+                        <p class="mb-0">
+                            <i class="fas fa-clock me-2"></i>
+                            Registered: {{ reg.registration_date|date:"M d, Y" }}
+                        </p>
+                    </div>
+
+                    <p class="card-text">{{ reg.event.description|truncatewords:20 }}</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'events:event_detail' reg.event.id %}" class="btn btn-outline-primary btn-sm">
+                            View Event
+                        </a>
+                        {% if not reg.approved %}
+                        <a href="{% url 'events:cancel_registration' reg.id %}" 
+                           class="btn btn-outline-danger btn-sm"
+                           onclick="return confirm('Are you sure you want to cancel your registration?')">
+                            Cancel
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+        <h3>No Registrations Found</h3>
+        <p class="text-muted">You haven't registered for any events yet.</p>
+        <a href="{% url 'events:event_list' %}" class="btn btn-primary">
+            <i class="fas fa-calendar-plus me-2"></i>Browse Events
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

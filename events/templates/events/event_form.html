@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Golden Hearts{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h4 mb-0">{{ title }}</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.title.id_for_label }}" class="form-label">
+                                    {{ form.title.label }} *
+                                </label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.title.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.location.id_for_label }}" class="form-label">
+                                    {{ form.location.label }} *
+                                </label>
+                                {{ form.location }}
+                                {% if form.location.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.location.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.date.id_for_label }}" class="form-label">
+                                    {{ form.date.label }} *
+                                </label>
+                                {{ form.date }}
+                                {% if form.date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.date.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.time.id_for_label }}" class="form-label">
+                                    {{ form.time.label }} *
+                                </label>
+                                {{ form.time }}
+                                {% if form.time.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.time.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.capacity.id_for_label }}" class="form-label">
+                                {{ form.capacity.label }}
+                            </label>
+                            {{ form.capacity }}
+                            <div class="form-text">Set to 0 for unlimited capacity</div>
+                            {% if form.capacity.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.capacity.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                {{ form.description.label }} *
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'events:event_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i> {{ title }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+</style>
+{% endblock %}

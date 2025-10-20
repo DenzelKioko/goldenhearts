@@ -6,11 +6,6 @@ from feedback.models import Feedback
 
 
 # --- Inline models for related content ---
-class EventInline(admin.TabularInline):
-    model = Event
-    extra = 0
-    fields = ('title', 'date', 'location', 'organizer')
-    show_change_link = True
 
 
 class DonationInline(admin.TabularInline):
@@ -38,7 +33,7 @@ class ProgramAdmin(admin.ModelAdmin):
     ordering = ('-date_created',)
     autocomplete_fields = ['created_by']
 
-    inlines = [EventInline, DonationInline, FeedbackInline]
+    inlines = [DonationInline, FeedbackInline]
 
     fieldsets = (
         ('Program Information', {

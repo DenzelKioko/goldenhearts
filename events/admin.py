@@ -1,43 +1,30 @@
 from django.contrib import admin
-from .models import Event
-
+from .models import Event, Registration
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title', 'program', 'date', 'location', 'organizer', 'is_upcoming')
-    list_filter = ('program', 'date')
-    search_fields = ('title', 'description', 'location', 'organizer__email')
-    ordering = ('-date',)
-    autocomplete_fields = ['program', 'organizer']
+    list_display = [
+        'title', 'date', 'time', 'location', 'capacity', 
+        'registered_count', 'approved_registrations_count', 'available_spots', 'is_full'
+    ]
+    list_filter = ['date', 'location', 'created_at']
+    search_fields = ['title', 'description', 'location']
+    readonly_fields = ['created_at', 'updated_at', 'registered_count', 'approved_registrations_count']
     date_hierarchy = 'date'
+    
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:  # If creating a new event
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
 
-    # Read-only fields for audit clarity
-    readonly_fields = ('is_upcoming',)
-
-    fieldsets = (
-        ("Event Details", {
-            'fields': ('title', 'program', 'description', 'date', 'location')
-        }),
-        ("Organizer Information", {
-            'fields': ('organizer',)
-        }),
-    )
-
-    def is_upcoming(self, obj):
-        """Display whether the event is upcoming or past."""
-        from django.utils import timezone
-        return "✅ Upcoming" if obj.date > timezone.now() else "🕒 Past"
-    is_upcoming.short_description = "Status"
-
-    actions = ['mark_as_past']
-
-    def mark_as_past(self, request, queryset):
-        """Mark selected events as completed (adds text to title)."""
-        updated = 0
-        for event in queryset:
-            if not event.title.endswith(" (Completed)"):
-                event.title += " (Completed)"
-                event.save()
-                updated += 1
-        self.message_user(request, f"{updated} event(s) marked as completed.")
-    mark_as_past.short_description = "Mark selected events as completed"
+@admin.register(Registration)
+class RegistrationAdmin(admin.ModelAdmin):
+    list_display = [
+        'user', 'event', 'registration_date', 'approved', 
+        'is_checked_in', 'can_check_in'
+    ]
+    list_filter = ['approved', 'is_checked_in', 'registration_date', 'event']
+    search_fields = ['user__email', 'user__first_name', 'user__last_name', 'event__title']
+    list_editable = ['approved', 'is_checked_in']
+    readonly_fields = ['registration_date']
+    raw_id_fields = ['user', 'event']

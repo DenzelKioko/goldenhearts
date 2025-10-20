@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ event.title }} - Golden Hearts{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Back Button -->
+            <a href="{% url 'events:event_list' %}" class="btn btn-outline-secondary mb-4">
+                <i class="fas fa-arrow-left me-2"></i>Back to Events
+            </a>
+
+            <!-- Event Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h1 class="card-title h2 mb-0">{{ event.title }}</h1>
+                        <div>
+                            {% if event.is_full %}
+                                <span class="badge bg-danger">Event Full</span>
+                            {% elif event.is_past %}
+                                <span class="badge bg-secondary">Past Event</span>
+                            {% else %}
+                                <span class="badge bg-success">Upcoming</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="text-muted mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2">
+                                    <i class="fas fa-calendar-alt me-2"></i>
+                                    <strong>Date:</strong> {{ event.date }}
+                                </p>
+                                <p class="mb-2">
+                                    <i class="fas fa-clock me-2"></i>
+                                    <strong>Time:</strong> {{ event.time }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    <strong>Location:</strong> {{ event.location }}
+                                </p>
+                                {% if event.capacity > 0 %}
+                                <p class="mb-0">
+                                    <i class="fas fa-users me-2"></i>
+                                    <strong>Capacity:</strong> 
+                                    {{ event.approved_registrations_count }}/{{ event.capacity }}
+                                    {% if event.available_spots > 0 %}
+                                        <span class="text-success">({{ event.available_spots }} spots left)</span>
+                                    {% endif %}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Event Description -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">About This Event</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ event.description|linebreaks }}</p>
+                </div>
+            </div>
+
+            <!-- Registration Section -->
+            {% if user.is_authenticated %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Registration</h3>
+                </div>
+                <div class="card-body">
+                    {% if user_registration %}
+                        <div class="alert {% if user_registration.approved %}alert-success{% else %}alert-warning{% endif %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas {% if user_registration.approved %}fa-check-circle{% else %}fa-clock{% endif %} me-2"></i>
+                                    <strong>
+                                        {% if user_registration.approved %}
+                                            Your registration has been approved!
+                                        {% else %}
+                                            Registration submitted and pending approval
+                                        {% endif %}
+                                    </strong>
+                                    <span class="badge {% if user_registration.approved %}bg-success{% else %}bg-warning text-dark{% endif %} ms-2">
+                                        {% if user_registration.approved %}Approved{% else %}Pending{% endif %}
+                                    </span>
+                                </div>
+                                {% if not user_registration.approved %}
+                                <a href="{% url 'events:cancel_registration' user_registration.id %}" 
+                                   class="btn btn-outline-danger btn-sm"
+                                   onclick="return confirm('Are you sure you want to cancel your registration?')">
+                                    Cancel
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        {% if event.is_past %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                This event has already occurred.
+                            </div>
+                        {% elif event.is_full %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                This event is full. Registration is closed.
+                            </div>
+                        {% else %}
+                            <form method="post">
+                                {% csrf_token %}
+                                <p class="mb-3">Interested in attending this event?</p>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-user-plus me-2"></i> Register for Event
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="card">
+                <div class="card-body text-center">
+                    <p class="mb-3">Please log in to register for this event.</p>
+                    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login to Register
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Admin Actions -->
+            {% if user.is_authenticated and user.role == 'admin' %}
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Admin Actions</h3>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group">
+                        <a href="{% url 'events:event_edit' event.id %}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-2"></i> Edit Event
+                        </a>
+                        <a href="{% url 'events:manage_registrations' event.id %}" class="btn btn-outline-info">
+                            <i class="fas fa-users me-2"></i> Manage Registrations
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Thank You for Your Donation{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card text-center shadow-lg border-0 rounded-4 p-5 bg-white">
+                <div class="text-success mb-4">
+                    <!-- Checkmark Icon using Bootstrap Icons -->
+                    <i class="bi bi-check-circle-fill" style="font-size: 4rem;"></i>
+                </div>
+                <h1 class="card-title fw-bolder mb-3 text-dark">
+                    Thank You!
+                </h1>
+                <p class="card-text fs-5 text-muted mb-4">
+                    Your generous support has been successfully received. Every contribution, whether financial, material, or service, makes a profound difference to our programs and the community we serve.
+                </p>
+                <p class="text-dark fw-bold mb-5">
+                    A confirmation email has been sent to the provided address with the details of your donation.
+                </p>
+                
+                <div class="d-grid gap-3">
+                    <a href="{% url 'home' %}" class="btn btn-warning btn-lg fw-bold shadow-sm">
+                        Return to Home Page
+                    </a>
+                    <a href="{% url 'programs:program_list' %}" class="btn btn-outline-secondary btn-sm">
+                        Explore Our Programs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

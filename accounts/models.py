@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
@@ -41,7 +42,6 @@ class User(AbstractUser):
         upload_to='profile_pics/', 
         null=True, 
         blank=True,
-        default='profile_pics/default.png' # Optional: Add a default placeholder image
     )
 
     ROLE_CHOICES = (
@@ -65,3 +65,14 @@ class User(AbstractUser):
     @property
     def is_patron(self):
         return self.role == 'patron'
+
+    def get_profile_picture_url(self):
+        """Safely get profile picture URL"""
+        if self.profile_picture and hasattr(self.profile_picture, 'url'):
+            try:
+                # Check if file exists
+                if os.path.exists(self.profile_picture.path):
+                    return self.profile_picture.url
+            except (ValueError, FileNotFoundError):
+                pass
+        return None 

@@ -37,44 +37,55 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
+
+                    <!-- 1. Core Navigation Links (Left Side) -->
+                    <li class="nav-item"><a href="{% url 'home' %}" class="nav-link text-dark">Home</a></li>
+                    <li class="nav-item"><a href="{% url 'programs:program_list' %}"
+                            class="nav-link text-dark">Programs</a></li>
+                    <li class="nav-item"><a href="{% url 'events:event_list' %}" class="nav-link text-dark">Events</a>
+                    </li>
+
+                    <li class="nav-item"><a href="{% url 'feedback:submit' %}" class="nav-link text-dark">Feedback</a>
+                    </li>
+
+                    <!-- NEW: Donate Dropdown Menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-dark fw-bold" href="#" id="donateDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gift-fill me-1"></i> Donate
+                        </a>
+                        <ul class="dropdown-menu border-0 shadow-sm rounded-3" aria-labelledby="donateDropdown">
+                            <li><a class="dropdown-item" href="{% url 'donations:donate_money' %}"><i
+                                        class="bi bi-currency-dollar me-2"></i> Financial Donation</a></li>
+                            <li><a class="dropdown-item" href="{% url 'donations:donate_items' %}"><i
+                                        class="bi bi-box-seam me-2"></i> In-Kind Donation (Items)</a></li>
+                            <li><a class="dropdown-item" href="{% url 'donations:donate_service' %}"><i
+                                        class="bi bi-tools me-2"></i> Service/Volunteer</a></li>
+                        </ul>
+                    </li>
+
                     <a href="{% url 'profile' %}" class="nav-link text-dark p-0 d-flex align-items-center">
-                        <!-- Display small profile picture or placeholder -->
-                        {% if user.profile_picture %}
-                        <img src="{{ user.profile_picture.url }}"
-                            alt="{{ user.first_name|default:user.email }}'s profile" class="rounded-circle me-2"
-                            style="width: 32px; height: 32px; object-fit: cover;">
+                        {% with profile_pic_url=user.get_profile_picture_url %}
+                        {% if profile_pic_url %}
+                        <img src="{{ profile_pic_url }}" alt="{{ user.first_name|default:user.email }}'s profile"
+                            class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
                         {% else %}
-                        <!-- Default person icon if no picture is uploaded -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                        <!-- Default person icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                             class="bi bi-person-circle me-2" viewBox="0 0 16 16">
                             <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
                             <path fill-rule="evenodd"
                                 d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
                         </svg>
                         {% endif %}
-                        
+                        {% endwith %}
                     </a>
 
-                    <!-- Display welcome message if user is authenticated -->
-
-                    <!-- Welcome message and user links -->
-                    <li class="nav-item">
-                        <span class="nav-link text-dark welcome-text">Welcome, {{ user.first_name|default:user.email}}!
-                        </span>
-                    </li>
-
-                    <!-- 1. Core Navigation Links (Left Side) -->
-                    <li class="nav-item"><a href="{% url 'home' %}" class="nav-link text-dark">Home</a></li>
-                    <li class="nav-item"><a href="{% url 'programs:program_list' %}"
-                            class="nav-link text-dark">Programs</a></li>
 
                     <!-- 2. User Authentication Links (Right Side) -->
                     <!-- Authenticated user links -->
 
-                    <li class="nav-item">
-                        <!-- Logout link styled as a button for prominence -->
-                        <a href="{% url 'logout' %}" class="nav-link text-dark">Logout</a>
-                    </li>
+
                     {% else %}
                     <!-- Unauthenticated links -->
                     <li class="nav-item"><a href="{% url 'home' %}" class="nav-link text-dark">Home</a></li>
@@ -82,6 +93,21 @@
                     <li class="nav-item">
                         <!-- Register link styled as a button for prominence -->
                         <a href="{% url 'register' %}" class="nav-link text-dark">Register</a>
+                    </li>
+                    <!-- NEW: Donate Dropdown Menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-dark fw-bold" href="#" id="donateDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gift-fill me-1"></i> Donate
+                        </a>
+                        <ul class="dropdown-menu border-0 shadow-sm rounded-3" aria-labelledby="donateDropdown">
+                            <li><a class="dropdown-item" href="{% url 'donations:donate_money' %}"><i
+                                        class="bi bi-currency-dollar me-2"></i> Financial Donation</a></li>
+                            <li><a class="dropdown-item" href="{% url 'donations:donate_items' %}"><i
+                                        class="bi bi-box-seam me-2"></i> In-Kind Donation (Items)</a></li>
+                            <li><a class="dropdown-item" href="{% url 'donations:donate_service' %}"><i
+                                        class="bi bi-tools me-2"></i> Service/Volunteer</a></li>
+                        </ul>
                     </li>
                     {% endif %}
 
@@ -97,7 +123,7 @@
     </main>
 
     <footer class="bg-dark text-center text-light py-3 mt-5">
-        <p>&copy; 2025 Golden Hearts Outreach. All rights reserved.</p>
+        <p>&copy; 2025 Golden Hearts Family. All rights reserved.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

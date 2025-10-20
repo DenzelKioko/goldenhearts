@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}{{ context_data.title绍 }} - Golden Hearts Outreach{% endblock title %}
+
+{% block content %}
+{% comment %} 
+Define variables to cleanly control initial display class based on donation_type.
+We use the 'hidden' Tailwind class instead of inline styles to avoid confusing the CSS linter.
+{% endcomment %}
+{% if donation_type != 'money' %}
+    {% with hide_money_class="hidden" %}
+        {% with hide_non_money_class="" %}
+        {% endwith %}
+    {% endwith %}
+{% else %}
+    {% with hide_money_class="" %}
+        {% with hide_non_money_class="hidden" %}
+        {% endwith %}
+    {% endwith %}
+{% endif %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="card shadow-lg border-0 rounded-3 p-5">
+            <h1 class="card-title text-center text-dark fw-bold mb-4">
+                <i class="bi {{ context_data.icon }} me-2"></i> {{ context_data.title }}
+            </h1>
+            <p class="text-center text-muted mb-5" id="description-text">
+                {% if donation_type == 'money' %}
+                Thank you for considering a financial gift. Your tax-deductible donation is processed securely.
+                {% elif donation_type == 'items' %}
+                Please let us know which items you wish to donate. A staff member will contact you shortly to arrange pickup/drop-off.
+                {% else %}
+                Describe the service or skill you wish to volunteer. We will match you with a current program need!
+                {% endif %}
+            </p>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <!-- 1. Dynamic Type Selector -->
+                <div class="mb-4">
+                    <label for="donation_type_selector" class="form-label fw-bold">Select Donation Type</label>
+                    <select id="donation_type_selector" class="form-select form-select-lg">
+                        <option value="money" {% if donation_type == 'money' %}selected{% endif %}>Financial Donation (Money)</option>
+                        <option value="items" {% if donation_type == 'items' %}selected{% endif %}>In-Kind Donation (Items)</option>
+                        <option value="service" {% if donation_type == 'service' %}selected{% endif %}>Service/Volunteer Donation</option>
+                    </select>
+                </div>
+                
+                <!-- Hidden field for Django Form processing - This is updated by JavaScript -->
+                <input type="hidden" name="{{ form.donation_type.name }}" id="id_donation_type" value="{{ donation_type }}">
+                
+                <!-- Donation-specific Fields -->
+                <!-- FIX: Use class attribute with a Tailwind 'hidden' class defined above -->
+                <div id="money-fields" class="mb-4 {{ hide_money_class }}">
+                    <label for="{{ form.amount.id_for_label }}" class="form-label fw-bold">Amount to Donate ($)</label>
+                    {{ form.amount }}
+                    {% if form.amount.errors %}<div class="alert alert-danger p-2 mt-1">{{ form.amount.errors }}</div>{% endif %}
+                    <small class="form-text text-muted">Minimum financial contribution is $1.00</small>
+                </div>
+
+                <!-- FIX: Use class attribute with a Tailwind 'hidden' class defined above -->
+                <div id="non-money-fields" class="mb-4 {{ hide_non_money_class }}">
+                    <label for="{{ form.description.id_for_label }}" class="form-label fw-bold">Description of Donation/Service</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}<div class="alert alert-danger p-2 mt-1">{{ form.description.errors }}</div>{% endif %}
+                </div>
+
+                <hr class="my-5">
+
+                <!-- Guest/Contact Fields (Hidden if logged in) -->
+                {% if not is_authenticated %}
+                <h4 class="mb-3">Your Contact Information</h4>
+                <div id="guest-fields">
+                    <div class="mb-3">
+                        <label for="{{ form.guest_name.id_for_label }}" class="form-label">Name (Optional)</label>
+                        {{ form.guest_name }}
+                        {% if form.guest_name.errors %}<div class="alert alert-danger p-2 mt-1">{{ form.guest_name.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-4">
+                        <label for="{{ form.guest_email.id_for_label }}" class="form-label">Email for Confirmation/Receipt *</label>
+                        {{ form.guest_email }}
+                        {% if form.guest_email.errors %}<div class="alert alert-danger p-2 mt-1">{{ form.guest_email.errors }}</div>{% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-center text-success fw-bold">Logged in as {{ user.email }}. Contact details will be linked to your account.</p>
+                {% endif %}
+
+                <!-- Optional Program Field -->
+                <div class="mb-4">
+                    <label for="{{ form.program.id_for_label }}" class="form-label">Dedicate to a Specific Program (Optional)</label>
+                    {{ form.program }}
+                    {% if form.program.errors %}<div class="alert alert-danger p-2 mt-1">{{ form.program.errors }}</div>{% endif %}
+                </div>
+
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-warning btn-lg fw-bold shadow-sm">
+                        Submit {{ context_data.title }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const selector = document.getElementById('donation_type_selector');
+    const hiddenTypeField = document.getElementById('id_donation_type');
+    const moneyFields = document.getElementById('money-fields');
+    const nonMoneyFields = document.getElementById('non-money-fields');
+    const descriptionText = document.getElementById('description-text');
+
+    // Mapped descriptions for dynamic text update
+    const descriptions = {
+        money: "Thank you for considering a financial gift. Your tax-deductible donation is processed securely.",
+        items: "Please let us know which items you wish to donate. A staff member will contact you shortly to arrange pickup/drop-off.",
+        service: "Describe the service or skill you wish to volunteer. We will match you with a current program need!"
+    };
+    
+    function updateFormVisibility(type) {
+        // 1. Update the hidden form field value for Django
+        hiddenTypeField.value = type;
+
+        // 2. Update descriptive text
+        descriptionText.textContent = descriptions[type];
+        
+        // 3. Toggle fields visibility using the 'hidden' class
+        if (type === 'money') {
+            moneyFields.classList.remove('hidden');
+            nonMoneyFields.classList.add('hidden');
+        } else {
+            moneyFields.classList.add('hidden');
+            nonMoneyFields.classList.remove('hidden');
+        }
+    }
+
+    // Since we now rely on the 'hidden' class for the initial load, we must ensure 
+    // the JavaScript update function runs immediately to correctly apply visibility based on the selector's initial value.
+    updateFormVisibility(selector.value);
+
+    // Add event listener for dynamic switching
+    selector.addEventListener('change', (event) => {
+        updateFormVisibility(event.target.value);
+    });
+});
+</script>
+
+{% endblock content %}

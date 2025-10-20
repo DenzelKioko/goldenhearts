@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cancel Registration - Golden Hearts{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-6 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h4 mb-0">Cancel Registration</h2>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                        <h3>Confirm Cancellation</h3>
+                    </div>
+                    
+                    <p class="mb-4">
+                        Are you sure you want to cancel your registration for 
+                        <strong>"{{ registration.event.title }}"</strong>?
+                    </p>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle me-2"></i>
+                        This action cannot be undone.
+                    </div>
+
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger me-2">
+                            <i class="fas fa-times me-2"></i> Yes, Cancel Registration
+                        </button>
+                    </form>
+                    <a href="{% url 'events:event_detail' registration.event.id %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Go Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

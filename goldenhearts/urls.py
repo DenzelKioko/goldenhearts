@@ -26,9 +26,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('programs/', include('programs.urls')),
     path('accounts/', include('accounts.urls')),
-    #path('donations/', include('donations.urls')),
-    #path('events/', include('events.urls')),
-    #path('feedback/', include('feedback.urls')),
+    path('donations/', include('donations.urls')),
+    path('events/', include('events.urls')),
+    path('feedback/', include('feedback.urls')),
     
 ]
 
