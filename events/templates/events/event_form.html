@@ -37,16 +37,28 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="{{ form.location.id_for_label }}" class="form-label">
-                                    {{ form.location.label }} *
+                                <label for="{{ form.program.id_for_label }}" class="form-label">
+                                    {{ form.program.label }} *
                                 </label>
-                                {{ form.location }}
-                                {% if form.location.errors %}
+                                {{ form.program }}
+                                {% if form.program.errors %}
                                 <div class="invalid-feedback d-block">
-                                    {{ form.location.errors.0 }}
+                                    {{ form.program.errors.0 }}
                                 </div>
                                 {% endif %}
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.location.id_for_label }}" class="form-label">
+                                {{ form.location.label }} *
+                            </label>
+                            {{ form.location }}
+                            {% if form.location.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.location.errors.0 }}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="row">

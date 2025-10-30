@@ -1,18 +1,67 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="container mt-4">
-    <h2 class="mb-3">Community Outreach Programs</h2>
+{% load static %}
 
-    {% for program in programs %}
-        <div class="card mb-3 shadow-sm">
-            <div class="card-body">
-                <h4>{{ program.title }}</h4>
-                <p>{{ program.description|truncatewords:25 }}</p>
-                <a href="{% url 'programs:program_detail' program.pk %}" class="btn btn-primary btn-sm">View Details</a>
+{% block title %}Programs - Golden Hearts{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">Our Programs</h1>
+            <p class="text-muted">Making a difference in our community</p>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for program in programs %}
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">{{ program.name }}</h5>
+                        <span class="badge bg-info">{{ program.get_category_display }}</span>
+                    </div>
+                    
+                    <p class="card-text">{{ program.description|truncatewords:25 }}</p>
+                    
+                    <div class="text-muted mb-3">
+                        {% if program.start_date %}
+                        <div class="mb-1">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            <small>Started: {{ program.start_date }}</small>
+                        </div>
+                        {% endif %}
+                        <div class="mb-1">
+                            <i class="fas fa-calendar-check me-2"></i>
+                            <small>{{ program.event_count }} total event{{ program.event_count|pluralize }}</small>
+                        </div>
+                        <div>
+                            <i class="fas fa-clock me-2"></i>
+                            <small>{{ program.upcoming_event_count }} upcoming event{{ program.upcoming_event_count|pluralize }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'programs:program_detail' program.pk %}" class="btn btn-outline-primary btn-sm">
+                            View Details
+                        </a>
+                        <a href="{% url 'events:events_by_program' program.pk %}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-calendar me-1"></i>View Events
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    {% empty %}
-        <p>No programs available at the moment.</p>
-    {% endfor %}
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+                <h3>No Programs Available</h3>
+                <p class="text-muted">No programs have been created yet.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

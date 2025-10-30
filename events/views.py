@@ -5,6 +5,7 @@ from django.db.models import Count, Q
 from django.utils import timezone
 from .models import Event, Registration
 from .forms import EventForm, RegistrationForm, RegistrationApprovalForm
+from programs.models import Program
 
 # Helper functions
 def is_admin(user):
@@ -15,16 +16,24 @@ def is_patron(user):
 
 # --- Public Views ---
 def event_list(request):
-    events = Event.objects.all().order_by('-date', '-time')
+    events = Event.objects.select_related('program').order_by('-date', '-time')
+    programs = Program.objects.filter(is_active=True)
     
     # Filter by query parameters
     upcoming = request.GET.get('upcoming')
+    program_id = request.GET.get('program')
+    
     if upcoming:
         events = events.filter(date__gte=timezone.now().date())
     
+    if program_id:
+        events = events.filter(program_id=program_id)
+    
     return render(request, 'events/event_list.html', {
         'events': events,
-        'upcoming_filter': bool(upcoming)
+        'programs': programs,
+        'upcoming_filter': bool(upcoming),
+        'selected_program': int(program_id) if program_id else None
     })
 
 def event_detail(request, event_id):
@@ -94,6 +103,10 @@ def event_create(request):
             return redirect('events:event_list')
     else:
         form = EventForm()
+        # Pre-select program if passed in URL
+        program_id = request.GET.get('program')
+        if program_id:
+            form.initial['program'] = program_id
     
     return render(request, 'events/event_form.html', {
         'form': form, 
@@ -163,3 +176,13 @@ def check_in_registration(request, reg_id):
             messages.error(request, "Cannot check in unapproved registration.")
     
     return redirect('events:manage_registrations', event_id=registration.event.id)
+
+# --- Program-specific Views ---
+def events_by_program(request, program_id):
+    program = get_object_or_404(Program, id=program_id, is_active=True)
+    events = Event.objects.filter(program=program).order_by('-date', '-time')
+    
+    return render(request, 'events/events_by_program.html', {
+        'program': program,
+        'events': events
+    })

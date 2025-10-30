@@ -7,6 +7,7 @@ urlpatterns = [
     # Public routes
     path('', views.event_list, name='event_list'),
     path('event/<int:event_id>/', views.event_detail, name='event_detail'),
+    path('program/<int:program_id>/events/', views.events_by_program, name='events_by_program'),
     
     # Patron routes
     path('my-registrations/', views.my_registrations, name='my_registrations'),

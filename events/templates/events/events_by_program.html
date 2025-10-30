@@ -1,71 +1,40 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Events - Golden Hearts{% endblock %}
+{% block title %}{{ program.name }} Events - Golden Hearts{% endblock %}
 
 {% block content %}
 <div class="container py-4">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h2 mb-1">Upcoming Events</h1>
-            <p class="text-muted">Join our community events and make a difference</p>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'events:event_list' %}">Events</a></li>
+                    <li class="breadcrumb-item active">{{ program.name }}</li>
+                </ol>
+            </nav>
+            <h1 class="h2 mb-1">{{ program.name }} Events</h1>
+            <p class="text-muted">{{ program.get_category_display }} Program</p>
         </div>
         {% if user.is_authenticated and user.role == 'admin' %}
-            <a href="{% url 'events:event_create' %}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Create Event
+            <a href="{% url 'events:event_create' %}?program={{ program.id }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add Event to Program
             </a>
         {% endif %}
     </div>
 
-    <!-- Messages -->
-    {% if messages %}
-    <div class="mb-4">
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        {% endfor %}
+    <!-- Program Description -->
+    {% if program.description %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">About {{ program.name }}</h5>
+            <p class="card-text">{{ program.description|linebreaks }}</p>
+        </div>
     </div>
     {% endif %}
 
-    <!-- Filter -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <div class="d-flex flex-wrap gap-2">
-                        <a href="?upcoming=true" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-calendar me-1"></i>Show Upcoming Only
-                        </a>
-                        <a href="{% url 'events:event_list' %}" class="btn btn-outline-secondary btn-sm">
-                            Show All Events
-                        </a>
-                        <div class="dropdown">
-                            <button class="btn btn-outline-info btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-filter me-1"></i>Filter by Program
-                            </button>
-                            <ul class="dropdown-menu">
-                                {% for program in programs %}
-                                <li>
-                                    <a class="dropdown-item" href="?program={{ program.id }}">
-                                        {{ program.name }} <small class="text-muted">({{ program.get_category_display }})</small>
-                                    </a>
-                                </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <small class="text-muted">{{ events.count }} event{{ events.count|pluralize }} found</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Events Grid -->
+    <!-- Events -->
     <div class="row">
         {% for event in events %}
         <div class="col-lg-6 mb-4">
@@ -83,11 +52,6 @@
                     </div>
                     
                     <div class="text-muted mb-3">
-                        <div class="mb-2">
-                            <i class="fas fa-project-diagram me-2"></i>
-                            <a href="{% url 'events:events_by_program' event.program.id %}" class="badge bg-info text-dark text-decoration-none">{{ event.program.name }}</a>
-                            <small class="text-muted ms-1">({{ event.program.get_category_display }})</small>
-                        </div>
                         <div class="mb-2">
                             <i class="fas fa-calendar-alt me-2"></i>
                             <strong>{{ event.date }}</strong> at {{ event.time }}
@@ -143,15 +107,11 @@
             <div class="text-center py-5">
                 <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                 <h3>No Events Found</h3>
-                <p class="text-muted">
-                    {% if upcoming_filter %}
-                        No upcoming events scheduled. Please check back later.
-                    {% else %}
-                        No events have been created yet.
-                    {% endif %}
-                </p>
+                <p class="text-muted">No events have been created for this program yet.</p>
                 {% if user.is_authenticated and user.role == 'admin' %}
-                <a href="{% url 'events:event_create' %}" class="btn btn-primary">Create Your First Event</a>
+                <a href="{% url 'events:event_create' %}?program={{ program.id }}" class="btn btn-primary">
+                    Create First Event for {{ program.name }}
+                </a>
                 {% endif %}
             </div>
         </div>

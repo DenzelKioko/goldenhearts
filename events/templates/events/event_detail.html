@@ -29,6 +29,14 @@
                     </div>
                     
                     <div class="text-muted mb-4">
+                        <div class="mb-3">
+                            <p class="mb-2">
+                                <i class="fas fa-project-diagram me-2"></i>
+                                <strong>Program:</strong> 
+                                <span class="badge bg-info text-dark">{{ event.program.name }}</span>
+                                <small class="text-muted ms-1">({{ event.program.get_category_display }})</small>
+                            </p>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <p class="mb-2">

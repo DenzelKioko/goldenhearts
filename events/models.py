@@ -1,10 +1,16 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from programs.models import Program
 
 class Event(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
+    program = models.ForeignKey(
+        Program,
+        on_delete=models.CASCADE,
+        related_name='events'
+    )
     date = models.DateField()
     time = models.TimeField()
     location = models.CharField(max_length=200)
