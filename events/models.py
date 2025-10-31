@@ -15,6 +15,7 @@ class Event(models.Model):
     time = models.TimeField()
     location = models.CharField(max_length=200)
     capacity = models.PositiveIntegerField(default=0)
+    is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
@@ -28,12 +29,16 @@ class Event(models.Model):
         ordering = ['-date', '-time']
     
     def __str__(self):
-        return self.title
+        return f"{self.title} - {self.program.name}"
     
     @property
     def is_past(self):
         """Check if event date is in the past"""
         return self.date < timezone.now().date()
+    
+    def is_upcoming(self):
+        """Check if event date is today or in the future"""
+        return self.date >= timezone.now().date()
     
     @property
     def registered_count(self):

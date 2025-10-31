@@ -2,12 +2,14 @@ from django.db import models
 from accounts.models import User
 from django.utils import timezone
 
+
 class Program(models.Model):
     CATEGORY_CHOICES = (
         ('health', 'Health'),
         ('education', 'Education'),
         ('environment', 'Environment'),
         ('community', 'Community Support'),
+        
     )
 
     name = models.CharField(max_length=255, unique=True)
